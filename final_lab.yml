@@ -1,0 +1,30 @@
+---
+- name: Deploy Nodejs App on The Remote Machine
+  hosts: devops
+  gather_facts: no
+  tasks:
+    - name: Copy The Compressed File to The Remote Machine
+      ansible.builtin.copy:
+        src: /home/ansible/lab/nodejs-app-1.0.0.tgz
+        dest: /home/ansible
+
+    - name: Extract the Archive File That is Already on The Remote Machine
+      ansible.builtin.unarchive:
+        src: /home/ansible/nodejs-app-1.0.0.tgz
+        dest: /home/ansible
+        remote_src: yes
+
+    - name: install  npm, nodejs  packages on The Remote Machine
+      ansible.builtin.yum:
+        name: npm                       #nodejs depends on npm
+        state: present
+
+    - name: Install npm on The Remote Machine    
+      ansible.builtin.shell: npm install 
+      args:
+        chdir: /home/ansible/package/
+      
+    - name: Run npm on The Remote Machine
+      ansible.builtin.shell: nohup npm start &
+      args:
+        chdir: /home/ansible/package/
